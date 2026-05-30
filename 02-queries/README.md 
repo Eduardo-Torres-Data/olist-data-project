@@ -1,0 +1,25 @@
+# Olist Brazilian E-Commerce — Data Analysis Project
+
+End-to-end data analysis project using the Olist e-commerce dataset.
+Pipeline: PostgreSQL → Python (ETL) → Tableau.
+
+## Project Status
+🚧 In progress · Phase 1 of 6
+
+## Tech Stack
+- **Database:** PostgreSQL 17
+- **Languages:** SQL, Python (Pandas, SQLAlchemy)
+- **Visualization:** Tableau
+- **Version control:** Git
+
+## Repository Structure
+
+    01-loading/    -- Database schema and data loading
+    02-queries/    -- Analytical SQL queries
+
+## Dataset
+[Olist Brazilian E-Commerce Public Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
+9 relational tables · ~100k orders · 2016–2018
+
+## Author
+Eduardo Torres · [GitHub](https://github.com/Eduardo-Torres-Data)

@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# CSV files (data lives outside the repo)
+*.csv
+
+# Environment variables / secrets
+.env
+.env.local
+
+# Python (for later phases)
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log

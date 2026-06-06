@@ -111,6 +111,7 @@ ORDER BY pct_bad_reviews DESC, avg_ticket DESC;
 
 
 -- Quarterly sales comparison (QoQ and YoY)
+EXPLAIN ANALYZE
 WITH info AS (SELECT 
     DATE_TRUNC('quarter', o.order_purchase_timestamp) AS quarter_start,
     EXTRACT(YEAR FROM o.order_purchase_timestamp) AS year,
@@ -149,3 +150,8 @@ ORDER BY 1;
 -- is a data artifact, not a real business decline. YoY (+3.82%) is also
 -- understated. Trend conclusions should be based on Q1-Q2 2018 only.
 -- Real finding: growth deceleration from +77% QoQ (Q3 2017) to +3.8% (Q2 2018).
+
+EXPLAIN ANALYZE
+SELECT order_status, COUNT(*) 
+FROM public.orders 
+GROUP BY order_status;

@@ -271,3 +271,4 @@ SELECT
     TO_CHAR(review_answer_timestamp, 'YYYYMMDD')::INTEGER,
     review_score
 FROM public.order_reviews;
+

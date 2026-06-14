@@ -1,5 +1,9 @@
 -- Olist Brazilian E-Commerce · Star Schema Analytical Queries
-
+-- Schema  : star
+-- Project : olist-data-project
+-- Author  : Eduardo Torres
+-- Created : 2026
+--
 -- Description:
 --   Analytical queries built on top of the star schema (star.*).
 --   Demonstrates dimensional modeling patterns: role-playing dimensions,

@@ -106,3 +106,44 @@ SELECT
     i.total_revenue
 FROM info i
 ORDER BY pct_bad_reviews DESC, i.total_revenue DESC;
+
+
+-- Average estimated time for deliveries by region, real vs estimated one
+
+SELECT 
+    dc.customer_region AS region,
+    ROUND(AVG(estimated.full_date - purchase.full_date),2) AS estimated_delivery_time,
+    ROUND(AVG(delivered.full_date - purchase.full_date),2) AS real_delivered_time,
+    COUNT(fo.order_id) AS total_orders
+FROM 
+    star.fact_orders fo 
+INNER JOIN star.dim_time purchase ON fo.purchase_date_sk = purchase.date_sk
+INNER JOIN star.dim_time delivered ON fo.delivered_date_sk = delivered.date_sk
+INNER JOIN star.dim_time estimated ON fo.estimated_delivery_sk = estimated.date_sk
+INNER JOIN star.dim_customer dc ON fo.customer_sk = dc.customer_sk
+GROUP BY dc.customer_region
+-- FINDINGS:
+-- All regions receive orders well ahead of estimated delivery date.
+-- Olist deliberately overestimates delivery times as a buffer strategy.
+-- Norte is the slowest region (22.54 days avg) but still arrives 15 days early.
+-- Sudeste is fastest (10.69 days) — proximity to main distribution centers.
+-- NOTE: only delivered orders included (INNER JOIN on delivered_date_sk
+-- excludes NULLs automatically — canceled/pending orders not counted).
+
+
+-- Distribution of payment methods and revenue by type.
+
+SELECT
+    payment_type,
+    COUNT(order_id) AS total_orders,
+    SUM(payment_value) AS total_revenue,
+    ROUND((SUM(payment_value) / COUNT(order_id)),2) AS avg_ticket
+FROM
+    star.fact_order_payments
+GROUP BY payment_type
+ORDER BY total_revenue DESC;
+-- FINDINGS:
+-- Credit card dominates: 74% of transactions, highest avg ticket ($163).
+-- Boleto (Brazilian bank slip) is second: 19% of transactions, $145 avg ticket.
+-- Voucher has the lowest avg ticket ($65) — used for partial payments or discounts.
+-- not_defined (3 transactions, $0.00): data quality issue in source.

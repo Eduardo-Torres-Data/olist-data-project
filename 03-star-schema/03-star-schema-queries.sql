@@ -77,10 +77,8 @@ ORDER BY i.year ASC, i.month
 -- Exclude Sep 2018 from any trend conclusions.
 
 
+
 -- Top worst sellers acording to review scores
-select * from star.dim_seller limit 10
-select * from star.fact_order_items limit 10
-select * from star.fact_order_reviews limit 10
 
 WITH info AS (
     SELECT

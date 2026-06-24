@@ -147,3 +147,37 @@ ORDER BY total_revenue DESC;
 -- Boleto (Brazilian bank slip) is second: 19% of transactions, $145 avg ticket.
 -- Voucher has the lowest avg ticket ($65) — used for partial payments or discounts.
 -- not_defined (3 transactions, $0.00): data quality issue in source.
+
+---------------------------------------------------------------------------------------------
+
+-- delivery_performance
+-- Purpose : Build a delivery-performance dataset for the Tableau analysis,
+-- resolving date surrogate keys from fact_orders into real dates
+-- via role-playing joins on dim_time. Exported to CSV and consumed
+-- by Tableau Public (which cannot connect live to PostgreSQL).
+--
+-- Grain : One row per DELIVERED order (orders never delivered are excluded
+--           on purpose: an undelivered order has no delivery time to measure).
+--
+-- Notes : dim_time is joined three times (role-playing dimension), once per
+-- date role: purchase, actual delivery, and estimated delivery.
+-- A positive late_days value means the order arrived AFTER promised.
+
+SELECT
+    fo.order_id,
+    fo.order_status,
+    purchase_date.full_date      AS purchase_date,
+    delivery_date.full_date      AS delivery_date,
+    estimated_date.full_date     AS estimated_delivery_date,
+    (delivery_date.full_date - purchase_date.full_date)   AS delivery_days,
+    (delivery_date.full_date - estimated_date.full_date)  AS late_days,
+    CASE WHEN (delivery_date.full_date - estimated_date.full_date) > 0 THEN TRUE
+        ELSE FALSE
+    END AS is_late
+FROM star.fact_orders AS fo
+    INNER JOIN star.dim_time AS purchase_date
+        ON fo.purchase_date_sk = purchase_date.date_sk
+    INNER JOIN star.dim_time AS delivery_date
+        ON fo.delivered_date_sk = delivery_date.date_sk
+    INNER JOIN star.dim_time AS estimated_date
+        ON fo.estimated_delivery_sk = estimated_date.date_sk;

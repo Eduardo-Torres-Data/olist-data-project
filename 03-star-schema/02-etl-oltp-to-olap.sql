@@ -13,7 +13,6 @@
 -- DIMENSIONS
 
 -- dim_time
--- -----------------------------------------------------------------------------
 -- Generated via generate_series — covers 2016-01-01 to 2018-12-31 (1,096 days).
 -- date_sk format: YYYYMMDD integer (e.g. 20170315).
 -- ISODOW: 1=Monday … 7=Sunday (ISO standard).
@@ -52,7 +51,6 @@ FROM generate_series(
 
 
 -- dim_customer
--- -----------------------------------------------------------------------------
 -- One row per customer_id (Olist creates a new customer_id per order).
 -- customer_region derived from customer_state via five-region Brazil mapping.
 -- customer_zip_code sourced from customer_zip_code_prefix (TEXT in OLTP).
@@ -93,7 +91,6 @@ FROM public.customers;
 
 
 -- dim_product
--- -----------------------------------------------------------------------------
 -- product_category_english denormalized from product_category_name_translation.
 -- LEFT JOIN preserves the 610 products with no category (NULL is intentional).
 
@@ -118,7 +115,6 @@ LEFT JOIN public.product_category_name_translation t
 
 
 -- dim_seller
--- -----------------------------------------------------------------------------
 -- seller_region derived from seller_state using the same five-region mapping
 -- applied to dim_customer.
 
@@ -158,7 +154,6 @@ FROM public.sellers;
 -- FACTS
 
 -- fact_orders
--- -----------------------------------------------------------------------------
 -- Grain: one row per order.
 -- order_item_count and order_value aggregated from public.order_items via CTE.
 -- LEFT JOIN on aggregated_items handles orders with no items (COALESCE → 0).
@@ -202,7 +197,6 @@ LEFT  JOIN aggregated_items  i ON o.order_id    = i.order_id;
 
 
 -- fact_order_items
--- -----------------------------------------------------------------------------
 -- Grain: one row per item within an order.
 -- customer_sk included for self-containment (avoids cross-fact joins).
 -- purchase_date_sk sourced from public.orders (items share the order timestamp).
@@ -235,7 +229,6 @@ INNER JOIN star.dim_seller    ds  ON oi.seller_id   = ds.seller_id;
 
 
 -- fact_order_payments
--- -----------------------------------------------------------------------------
 -- Grain: one row per payment record (an order can have multiple payment types).
 -- No FK to dim_time: payment records carry no independent timestamp in dataset.
 
@@ -254,7 +247,6 @@ FROM public.order_payments;
 
 
 -- fact_order_reviews
--- -----------------------------------------------------------------------------
 -- Grain: one row per review record.
 -- review_answer_date_sk is nullable — not all reviews receive a seller response.
 -- review_id excluded: not unique in source data (profiling confirmed duplicates).

@@ -29,14 +29,12 @@ CREATE SCHEMA star;
 
 
 -- dim_time
--- -----------------------------------------------------------------------------
 -- One row per calendar day covering the full dataset range (2016-01-01 to
 -- 2018-12-31). Populated via generate_series — not sourced from OLTP data.
 --
 -- Design note: date_sk uses YYYYMMDD integer format (e.g. 20170315) instead
 -- of SERIAL. This is the standard exception to the surrogate-key-has-no-meaning
 -- rule: the value is self-documenting and enables range filtering without joins.
--- -----------------------------------------------------------------------------
 
 CREATE TABLE star.dim_time (
     date_sk         INTEGER       NOT NULL,
@@ -70,7 +68,6 @@ CREATE TABLE star.dim_time (
 
 
 -- dim_customer
--- -----------------------------------------------------------------------------
 -- One row per customer_id (not per person — Olist generates a new customer_id
 -- per order). customer_unique_id identifies the actual person across orders.
 --
@@ -96,7 +93,6 @@ CREATE TABLE star.dim_customer (
 
 
 -- dim_product
--- -----------------------------------------------------------------------------
 -- One row per product. product_category_english is the denormalized translation
 -- (merged from public.product_category_name_translation in ETL).
 -- 610 products have no category — nullable is intentional.
@@ -123,7 +119,6 @@ CREATE TABLE star.dim_product (
 
 
 -- dim_seller
--- -----------------------------------------------------------------------------
 -- One row per seller. seller_region derived from seller_state using the same
 -- five-region mapping applied to dim_customer.
 --
@@ -148,7 +143,6 @@ CREATE TABLE star.dim_seller (
 
 
 -- fact_orders
--- -----------------------------------------------------------------------------
 -- Grain: one row per order.
 --
 -- Role-playing dimensions: dim_time is referenced five times with different
@@ -209,7 +203,6 @@ CREATE TABLE star.fact_orders (
 
 
 -- fact_order_items
--- -----------------------------------------------------------------------------
 -- Grain: one row per item within an order (an order can have multiple items
 -- from different sellers).
 --
@@ -254,7 +247,6 @@ CREATE TABLE star.fact_order_items (
 
 
 -- fact_order_payments
--- -----------------------------------------------------------------------------
 -- Grain: one row per payment record. A single order can have multiple payment
 -- records (e.g. credit card + voucher split).
 --
@@ -279,7 +271,6 @@ CREATE TABLE star.fact_order_payments (
 
 
 -- fact_order_reviews
--- -----------------------------------------------------------------------------
 -- Grain: one row per review. In this dataset most orders have one review, but
 -- ~551 orders have duplicate review records (source data quality issue).
 --

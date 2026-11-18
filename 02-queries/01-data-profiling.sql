@@ -1,10 +1,9 @@
 
----------------- 1st step: Profiling -------------------
---------------------------------------------------------
+-- 1st step: Profiling
 
 -- CUSTOMERS 
 -- 1. How many NULL do we have in every columm?
-SELECT * FROM staging.customers LIMIT 100
+SELECT * FROM staging.customers LIMIT 100;
 SELECT
     COUNT(*) AS total_filas,
     COUNT(*) FILTER (WHERE customer_id IS NULL) AS null_customer_id,
@@ -27,28 +26,28 @@ FROM staging.customers;
 
 -- GEOLOCATION
 -- 1. Do we have NULLs in the columms?
-SELECT * FROM staging.geolocation LIMIT 100
+SELECT * FROM staging.geolocation LIMIT 100;
 SELECT 
     COUNT(*) FILTER (WHERE geolocation_zip_code_prefix IS NULL) AS zip_code,
     COUNT(*) FILTER (WHERE geolocation_lat IS NULL) AS lat,
     COUNT(*) FILTER (WHERE geolocation_lng IS NULL) AS lng,
     COUNT(*) FILTER (WHERE geolocation_city IS NULL) AS city,
     COUNT(*) FILTER (WHERE geolocation_state IS NULL) AS statee
-FROM staging.geolocation
+FROM staging.geolocation;
 
 -- 2. How many city and states do we have registered?
 SELECT
     COUNT(DISTINCT geolocation_city) AS citys,
     COUNT(DISTINCT geolocation_state) AS states
-FROM staging.geolocation
+FROM staging.geolocation;
 
 -- Note: We have multiple zip codes duplicated 
-SELECT geolocation_zip_code_prefix, COUNT(*) FROM staging.geolocation GROUP BY geolocation_zip_code_prefix
+SELECT geolocation_zip_code_prefix, COUNT(*) FROM staging.geolocation GROUP BY geolocation_zip_code_prefix;
 
 
 -- ORDER ITEMS
 -- 1. Do we have NULLs?
-SELECT * FROM staging.order_items LIMIT 100
+SELECT * FROM staging.order_items LIMIT 100;
 SELECT
     COUNT(*) FILTER (WHERE order_id IS NULL) AS ids,
     COUNT(*) FILTER (WHERE order_item_id IS NULL) AS id_item,
@@ -57,7 +56,7 @@ SELECT
     COUNT(*) FILTER (WHERE shipping_limit_date IS NULL) AS shipping_date,
     COUNT(*) FILTER (WHERE price IS NULL) AS price,
     COUNT(*) FILTER (WHERE freight_value IS NULL) as freight
-FROM staging.order_items
+FROM staging.order_items;
 
 -- 2. Do we have Ids duplicated? 
 SELECT 
@@ -66,10 +65,10 @@ SELECT
     COUNT(*) AS total
 FROM staging.order_items
 GROUP BY order_id, order_item_id
-HAVING COUNT(*) > 1
+HAVING COUNT(*) > 1;
 
 -- ORDER PAYMENTS 
-SELECT * FROM staging.order_payments LIMIT 100
+SELECT * FROM staging.order_payments LIMIT 100;
 -- 1. Do we have NULLs?
 SELECT 
     COUNT(*) FILTER (WHERE order_id IS NULL) AS ids,
@@ -77,7 +76,7 @@ SELECT
     COUNT(*) FILTER (WHERE payment_type IS NULL) AS p_type,
     COUNT(*) FILTER (WHERE payment_installments IS NULL) AS p_installments,
     COUNT(*) FILTER (WHERE payment_value IS NULL) AS payment_value
-FROM staging.order_payments
+FROM staging.order_payments;
 
 
 -- 2. Do we have duplicated ids?
@@ -88,11 +87,11 @@ SELECT
 FROM
     staging.order_payments
 GROUP BY order_id, payment_sequential
-HAVING COUNT(*) > 1
+HAVING COUNT(*) > 1;
 
 
 -- ORDER REVIEWS
-SELECT * FROM staging.order_reviews LIMIT 100
+SELECT * FROM staging.order_reviews LIMIT 100;
 -- 1. Do we have NULLs?
 SELECT
     COUNT(*) AS total_rows,
@@ -112,10 +111,10 @@ SELECT
     COUNT (*)
 FROM staging.order_reviews
 GROUP BY review_id, order_id
-HAVING COUNT(*) > 1
+HAVING COUNT(*) > 1;
 
 -- ORDERS
-SELECT * FROM staging.orders LIMIT 100
+SELECT * FROM staging.orders LIMIT 100;
 -- 1. Do we have NULLs?
 SELECT
     COUNT(*) AS total_rows,
@@ -144,10 +143,10 @@ SELECT
     COUNT(*) AS total
 FROM staging.orders
 GROUP BY order_id
-HAVING COUNT(*) > 1
+HAVING COUNT(*) > 1;
 
 -- PRODUCT CATEGORY NAME TRANSALATION
-SELECT * FROM staging.product_category_name_translation
+SELECT * FROM staging.product_category_name_translation;
 -- 1. Do we have nulls?
 SELECT
     COUNT(*)                                                          AS total_rows,
@@ -161,10 +160,10 @@ SELECT
     COUNT (*) AS total
 FROM staging.product_category_name_translation
 GROUP BY product_category_name
-HAVING COUNT(*) > 1
+HAVING COUNT(*) > 1;
 
 -- PRODUCTS
-SELECT * FROM staging.products LIMIT 100
+SELECT * FROM staging.products LIMIT 100;
 -- 1. Do we have NULLs?
 SELECT
     COUNT(*) AS total_rows,
@@ -185,10 +184,10 @@ SELECT
     COUNT (*) AS total
 FROM staging.products
 GROUP BY product_id
-HAVING COUNT (*) > 1
+HAVING COUNT (*) > 1;
 
 -- SELLERS 
-SELECT * FROM staging.sellers LIMIT 100
+SELECT * FROM staging.sellers LIMIT 100;
 -- Do we have NULLs?
 SELECT
     COUNT(*)                                                    AS total_rows,
@@ -204,12 +203,11 @@ SELECT
     COUNT (*)
 FROM staging.sellers
 GROUP BY seller_id 
-HAVING COUNT (*) > 1
+HAVING COUNT (*) > 1;
 
 
 
--------------------- 2nd step: OLTP design --------------------
----------------------------------------------------------------
+-- 2nd step: OLTP design
 
 
 -- OLTP DESIGN DECISIONS
@@ -224,7 +222,6 @@ HAVING COUNT (*) > 1
 
 
 -- TABLE: sellers
-------------------------------------------------------
 -- Entity: Registered seller on the Olist platform
 -- Dependencies: none (referenced by order_items)
 --
@@ -243,7 +240,6 @@ HAVING COUNT (*) > 1
 
 
 -- TABLE: customers
-------------------------------------------------------
 -- Entity: Customer token per order. One real person can have multiple customer_ids.
 -- Dependencies: none (referenced by orders)
 --
@@ -268,7 +264,6 @@ HAVING COUNT (*) > 1
 
 
 -- TABLE: product_category_name_translation
-------------------------------------------------------
 -- Entity: Lookup table — Portuguese to English category name mapping
 -- Dependencies: none (referenced by products)
 --
@@ -283,7 +278,6 @@ HAVING COUNT (*) > 1
 
 
 -- TABLE: geolocation
-------------------------------------------------------
 -- Entity: Geographic coordinates per Brazilian zip code prefix
 -- Dependencies: none (referenced by customers, sellers indirectly)
 -- NOTE: staging has ~1M rows with duplicate zip codes (multiple measurements
@@ -310,7 +304,6 @@ HAVING COUNT (*) > 1
 
 
 -- TABLE: products
-------------------------------------------------------
 -- Entity: Product listed on the Olist platform
 -- Dependencies: product_category_name_translation
 --
@@ -344,7 +337,6 @@ HAVING COUNT (*) > 1
 
 
 -- TABLE: orders
-------------------------------------------------------
 -- Entity: A purchase order placed by a customer
 -- Dependencies: customers
 --
@@ -377,7 +369,6 @@ HAVING COUNT (*) > 1
 
 
 -- TABLE: order_items
-------------------------------------------------------
 -- Entity: Individual item within an order
 -- Dependencies: orders, products, sellers
 --
@@ -407,7 +398,6 @@ HAVING COUNT (*) > 1
 
 
 -- TABLE: order_payments
-------------------------------------------------------
 -- Entity: Payment entry for an order (one order can have multiple payment methods)
 -- Dependencies: orders
 --

@@ -69,7 +69,7 @@ SELECT
      NULLIF(LAG(i.total_revenue,12) OVER (ORDER BY i.year ASC, i.month ASC),0) * 100),2) AS vs_previous_year
 FROM info i
 WHERE i.year BETWEEN 2017 AND 2018
-ORDER BY i.year ASC, i.month
+ORDER BY i.year ASC, i.month;
 -- FINDINGS:
 -- YoY growth decelerates from +689% (Jan 2018) to +49% (Aug 2018).
 -- This reflects market maturation, not decline — absolute revenue remains high.
@@ -121,7 +121,7 @@ INNER JOIN star.dim_time purchase ON fo.purchase_date_sk = purchase.date_sk
 INNER JOIN star.dim_time delivered ON fo.delivered_date_sk = delivered.date_sk
 INNER JOIN star.dim_time estimated ON fo.estimated_delivery_sk = estimated.date_sk
 INNER JOIN star.dim_customer dc ON fo.customer_sk = dc.customer_sk
-GROUP BY dc.customer_region
+GROUP BY dc.customer_region;
 -- FINDINGS:
 -- All regions receive orders well ahead of estimated delivery date.
 -- Olist deliberately overestimates delivery times as a buffer strategy.
@@ -148,7 +148,6 @@ ORDER BY total_revenue DESC;
 -- Voucher has the lowest avg ticket ($65) — used for partial payments or discounts.
 -- not_defined (3 transactions, $0.00): data quality issue in source.
 
----------------------------------------------------------------------------------------------
 
 -- delivery_performance
 -- Purpose : Build a delivery-performance dataset for the Tableau analysis,

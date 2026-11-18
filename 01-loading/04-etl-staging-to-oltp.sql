@@ -13,7 +13,6 @@
 
 
 -- INDEPENDENT TABLES (no foreign keys)
--- -------------------------------------------------------
 
 -- product_category_name_translation
 -- Source: 71 rows. Text to text, no transformation needed.
@@ -83,7 +82,6 @@ FROM staging.customers;
 
 
 -- DEPENDENT TABLES (foreign keys — load after their parents)
--- -------------------------------------------------------
 
 -- products
 -- FK orphans: 13 products reference categories not in translation table → NULL.
@@ -234,7 +232,7 @@ WHERE c.customer_id IS NULL
 UNION ALL
 SELECT 'order_items → orders',
     COUNT(*) FROM public.order_items i
-    LEFT JOIN public.orders o ON i.order_id = o.Porder_id
+    LEFT JOIN public.orders o ON i.order_id = o.order_id
     WHERE o.order_id IS NULL
 UNION ALL
 SELECT 'order_payments → orders',

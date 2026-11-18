@@ -14,7 +14,6 @@
 --   window functions with date logic,
 --   SUM() OVER () for inline percentage calculation
 
------------------------------------------------------------------------------------
 
 -- How many orders do we have per status and what is the percentage represented by each one
 
@@ -134,6 +133,7 @@ SELECT
     ROUND((revenue - LAG(revenue, 4) OVER (ORDER BY quarter_start)) * 100.0
     / NULLIF(LAG(revenue, 4) OVER (ORDER BY quarter_start), 0),2) AS pct_previous_year
 FROM info
+ORDER BY quarter_start;
 
 SELECT 
     DATE_TRUNC('quarter', order_purchase_timestamp) AS quarter,

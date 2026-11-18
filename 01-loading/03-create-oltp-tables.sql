@@ -26,7 +26,6 @@ DROP TABLE IF EXISTS public.geolocation                       CASCADE;
 
 
 -- INDEPENDENT TABLES (no foreign keys)
--- -------------------------------------------------------
 
 -- Geographic reference per zip code prefix.
 -- NOTE: staging has ~1M rows (multiple measurements per zip).
@@ -81,7 +80,6 @@ CREATE TABLE public.customers (
 );
 
 -- TABLES WITH FOREIGN KEYS (dependency order)
--- -------------------------------------------------------
 
 -- Product catalog.
 -- ~610 products have no category (FK column is nullable by design).

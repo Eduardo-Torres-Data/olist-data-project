@@ -3,6 +3,8 @@
 
 # CSV files (data lives outside the repo)
 *.csv
+/data/
+/04-tableau/Other/#TableauTemp_*.hyper
 
 # Environment variables / secrets
 .env
